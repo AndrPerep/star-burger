@@ -66,18 +66,45 @@ def register_order(request):
         order = json.loads(request.body.decode())
     except RawPostDataException:
         order = request.data
+    # try:
     created_order = Order.objects.create(
         first_name=order['firstname'],
         last_name=order['lastname'],
         phone=order['phonenumber'],
         address=order['address']
     )
+    # except KeyError:
+    #     pass
 
-    for product in order['products']:
-        OrderElement(
-            order=created_order,
-            product=Product.objects.get(id=product['product']),
-            quantity=product['quantity']
-        ).save()
+
+    try:
+        for product in order['products']:
+            OrderElement(
+                order=created_order,
+                product=Product.objects.get(id=product['product']),
+                quantity=product['quantity']
+            ).save()
+    except TypeError:
+        print(request.data)
+        if type(order['products']) == str:
+            return JsonResponse({
+                'error': 'products: Ожидался list со значениями, но был получен "str".'
+            })
+        elif order['products'] == None:
+            return JsonResponse({
+                'error': 'products: Это поле не может быть пустым.'
+            })
+        elif order['products'] == []:
+            return JsonResponse({
+                'error': 'products: Этот список не может быть пустым.'
+            })
+        else:
+            return JsonResponse({
+                'error': 'keyerror'
+            })
+    except KeyError:
+        return JsonResponse({
+            'error': 'products: Обязательное поле.'
+        })
     return JsonResponse({
     })
