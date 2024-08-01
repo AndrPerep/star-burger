@@ -125,8 +125,8 @@ class RestaurantMenuItem(models.Model):
 
 
 class Order(models.Model):
-    first_name = models.TextField('Имя')
-    last_name = models.TextField('Фамилия', blank=True)
+    firstname = models.TextField('Имя')
+    lastname = models.TextField('Фамилия', blank=True)
     phone = PhoneNumberField('Телефон')
     address = models.TextField('Адрес', blank=True)
     products = models.ManyToManyField(Product, 'orders', through='OrderElement')
